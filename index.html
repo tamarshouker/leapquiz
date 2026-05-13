@@ -410,7 +410,7 @@
   <div class="loading-wrap">
     <span class="loading-emoji">🔮</span>
     <p class="loading-title">Creating your Clarity Roadmap…</p>
-    <p class="loading-sub">Analysing your answers to map your clearest path forward</p>
+    <p class="loading-sub" id="loading-msg">Reading your answers…</p>
     <div class="loading-dots">
       <div class="dot"></div><div class="dot"></div><div class="dot"></div>
     </div>
@@ -722,12 +722,28 @@ function startQuiz() {
   renderQ(); updateProgress();
 }
 
-function nextQ() {
+async function nextQ() {
   if (state.idx < QS.length - 1) {
     state.idx++; renderQ(); updateProgress();
   } else {
     show("loading");
-    setTimeout(() => { state.results = buildResults(); show("results"); renderResults(); scrollTo(0,0); }, 2600);
+    startLoadingMessages();
+    try {
+      const summary = formatAnswersForLLM();
+      const resp = await fetch("/api/results", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ summary }),
+      });
+      if (!resp.ok) throw new Error("API " + resp.status);
+      const llm = await resp.json();
+      state.results = { ...llm, _llm: true, open: getOpenAnswers() };
+    } catch (e) {
+      console.warn("LLM unavailable, using local fallback:", e.message);
+      state.results = buildResults();
+    }
+    stopLoadingMessages();
+    show("results"); renderResults(); scrollTo(0, 0);
   }
 }
 
@@ -985,37 +1001,129 @@ function buildResults() {
   };
 }
 
+/* ─── Loading message cycling ───────────────────── */
+const LOADING_MSGS = [
+  "Reading your answers…",
+  "Identifying your patterns…",
+  "Mapping what's blocking you…",
+  "Connecting your strengths to your situation…",
+  "Crafting your personalised roadmap…",
+  "Almost there…",
+];
+let _loadingTimer = null;
+let _loadingIdx = 0;
+
+function startLoadingMessages() {
+  _loadingIdx = 0;
+  const el = document.getElementById("loading-msg");
+  if (el) el.textContent = LOADING_MSGS[0];
+  _loadingTimer = setInterval(() => {
+    _loadingIdx = (_loadingIdx + 1) % LOADING_MSGS.length;
+    const el = document.getElementById("loading-msg");
+    if (el) el.textContent = LOADING_MSGS[_loadingIdx];
+  }, 2200);
+}
+
+function stopLoadingMessages() {
+  if (_loadingTimer) { clearInterval(_loadingTimer); _loadingTimer = null; }
+}
+
+/* ─── Format answers for LLM ────────────────────── */
+const SEC_NAMES = [
+  "", // 1-indexed
+  "Where Are You Right Now?",
+  "Where Do You Want To Go?",
+  "What's Blocking You?",
+  "Your Repeating Pattern",
+  "What Supports You?",
+  "Your Next Direction",
+  "Final Reflection",
+];
+
+function formatAnswersForLLM() {
+  let out = "";
+  let lastSection = 0;
+  for (const q of QS) {
+    if (q.s !== lastSection) {
+      lastSection = q.s;
+      out += `\n### SECTION ${q.s}: ${SEC_NAMES[q.s]}\n`;
+    }
+    const a = ans(q.id);
+    out += `\nQ${q.id}. ${q.text}\n`;
+    if (q.type === "text") {
+      if (a.text && a.text.trim()) out += `Answer: "${a.text.trim()}"\n`;
+      else out += `(skipped)\n`;
+    } else {
+      const chosen = (a.sel || []).map(k => {
+        if (k === "OTHER") return a.other ? `Other: "${a.other}"` : "Other";
+        const opt = q.opts?.find(o => o.k === k);
+        return opt ? opt.t : k;
+      });
+      out += chosen.length > 0
+        ? `Answer: ${chosen.map(t => `"${t}"`).join(", ")}\n`
+        : `(skipped)\n`;
+    }
+  }
+  return out.trim();
+}
+
+function getOpenAnswers() {
+  return {
+    clarity:  ans(22).text || "",
+    next:     ans(23).text || "",
+    reminder: ans(24).text || "",
+  };
+}
+
+/* ─── Render results ────────────────────────────── */
 function renderResults() {
   const r = state.results;
+  const isLLM = !!r._llm;
 
+  // Success feelings always derived locally from Q6
+  const feelingsMap = {
+    A:"Free",B:"Calm",C:"Confident",D:"Proud",E:"Safe",
+    F:"Excited",G:"Energised",H:"Clear",I:"Aligned",J:"Powerful",
+  };
+  const s6 = ans(6);
+  const successFeelings = s6.sel.filter(k=>k!=="OTHER").map(k=>feelingsMap[k]).filter(Boolean);
+
+  // Build card list
   const cards = [
-    { icon:"🌱", bg:"#EDE9FE", label:"Current Stage",         val:`You are in a stage of ${r.stage}.` },
-    { icon:"✨", bg:"#FCE7F3", label:"Main Desire",           val:`What you most want right now is ${r.desire}.` },
+    { icon:"🌱", bg:"#EDE9FE", label:"Where You Are Right Now", val: isLLM ? r.stage : `You are in a stage of ${r.stage}.` },
+    { icon:"✨", bg:"#FCE7F3", label:"What You Most Want",      val: isLLM ? r.desire : `What you most want right now is ${r.desire}.` },
   ];
-  if (r.successFeelings.length > 0) {
-    cards.push({ icon:"🎯", bg:"#F3E8FF", label:"Success Feels Like", val: r.successFeelings.join(" · ") });
+  if (successFeelings.length > 0) {
+    cards.push({ icon:"🎯", bg:"#F3E8FF", label:"Success Feels Like", val: successFeelings.join(" · ") });
   }
   cards.push(
-    { icon:"🔓", bg:"#FEF3C7", label:"Core Block",            val:`The main thing slowing you down is ${r.block}.` },
-    { icon:"💭", bg:"#FFE4E6", label:"Deeper Fear",           val:`Underneath it, there may be a fear of ${r.fear}.` },
-    { icon:"🔄", bg:"#D1FAE5", label:"Repeating Pattern",     val:`Your pattern tends to be ${r.pattern}.` },
-    { icon:"💫", bg:"#DBEAFE", label:"Best Support Style",    val:`You move forward best with ${r.support}.` },
-    { icon:"🗺️",  bg:"#EDE9FE", label:"Next 30-Day Focus",    val:`Your recommended focus: ${r.focus}.` },
-    { icon:"⚡", bg:"#FEF3C7", label:"Your First Step",       val: r.firstStep },
+    { icon:"🔓", bg:"#FEF3C7", label:"What's Blocking You",    val: isLLM ? r.block    : `The main thing slowing you down is ${r.block}.` },
+    { icon:"💭", bg:"#FFE4E6", label:"The Deeper Fear",        val: isLLM ? r.fear     : `Underneath it, there may be a fear of ${r.fear}.` },
+    { icon:"🔄", bg:"#D1FAE5", label:"Your Repeating Pattern", val: isLLM ? r.pattern  : `Your pattern tends to be ${r.pattern}.` },
+    { icon:"💫", bg:"#DBEAFE", label:"What Supports You",      val: isLLM ? r.support  : `You move forward best with ${r.support}.` },
+    { icon:"🗺️",  bg:"#EDE9FE", label:"Your Next 30-Day Focus", val: isLLM ? r.focus    : `Your recommended focus: ${r.focus}.` },
+    { icon:"⚡", bg:"#FEF3C7", label:"Your First Step",        val: isLLM ? r.firstStep : r.firstStep },
   );
 
   document.getElementById("results-grid").innerHTML = cards.map(c => `
     <div class="r-card">
       <div class="r-icon" style="background:${c.bg}">${c.icon}</div>
-      <div>
+      <div style="flex:1">
         <div class="r-label">${c.label}</div>
         <div class="r-val">${c.val}</div>
       </div>
     </div>
   `).join("");
 
+  // Encouragement card (LLM only) replaces closing body text
+  if (isLLM && r.encouragement) {
+    document.querySelector(".closing-body").textContent = r.encouragement;
+  }
+
+  // Open answers
   const openSec = document.getElementById("open-sec");
-  const { clarity, next, reminder } = r.open;
+  const openData = r.open || getOpenAnswers();
+  const { clarity, next, reminder } = openData;
   if (clarity || next || reminder) {
     openSec.innerHTML = `
       <div class="open-section">
