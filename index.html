@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clarity Roadmap — From Stuck to Clear</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --v:  #7C3AED; --v-l: #EDE9FE; --v-d: #5B21B6;
+      --p:  #DB2777; --p-l: #FCE7F3; --p-d: #9D174D;
+      --a:  #D97706; --a-l: #FEF3C7; --a-d: #92400E;
+      --r:  #E11D48; --r-l: #FFE4E6; --r-d: #9F1239;
+      --e:  #059669; --e-l: #D1FAE5; --e-d: #065F46;
+      --b:  #2563EB; --b-l: #DBEAFE; --b-d: #1E40AF;
+      --pu: #9333EA; --pu-l:#F3E8FF; --pu-d:#6B21A8;
+      --bg: #FAF7FF;
+      --text: #1F2937;
+      --muted: #6B7280;
+      --border: #E5E7EB;
+      --accent: #7C3AED;
+      --accent-l: #EDE9FE;
+      --accent-d: #5B21B6;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse at 15% 15%, rgba(124,58,237,.06) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(219,39,119,.06) 0%, transparent 55%);
+    }
+
+    /* ── Progress bar ────────────────────────────── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 4px; background: #E5E7EB; z-index: 200;
+    }
+    #progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-d));
+      transition: width .45s cubic-bezier(.4,0,.2,1);
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* ── Screens ─────────────────────────────────── */
+    .screen {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 32px 16px;
+    }
+    .screen.hidden { display: none !important; }
+
+    /* ── Intro ───────────────────────────────────── */
+    .intro-wrap { max-width: 560px; width: 100%; text-align: center; }
+
+    .intro-badge {
+      display: inline-block;
+      background: var(--v-l); color: var(--v);
+      font-size: 13px; font-weight: 600;
+      padding: 6px 16px; border-radius: 999px;
+      margin-bottom: 24px; letter-spacing: .03em;
+      animation: fadeDown .5s ease both;
+    }
+    .intro-title {
+      font-size: clamp(34px,6vw,54px); font-weight: 800; line-height: 1.1;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, #7C3AED 0%, #DB2777 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeDown .5s .08s ease both;
+    }
+    .intro-sub {
+      font-size: 18px; font-weight: 500; color: var(--muted);
+      margin-bottom: 28px; line-height: 1.5;
+      animation: fadeDown .5s .16s ease both;
+    }
+    .intro-card {
+      background: #fff; border-radius: 18px; padding: 24px 28px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.05), 0 12px 32px rgba(124,58,237,.07);
+      text-align: left; margin-bottom: 24px; line-height: 1.75;
+      font-size: 15px; color: var(--text);
+      animation: fadeDown .5s .24s ease both;
+    }
+    .intro-card p + p { margin-top: 12px; }
+    .intro-stats {
+      display: flex; gap: 12px; justify-content: center;
+      margin-bottom: 28px;
+      animation: fadeDown .5s .32s ease both;
+    }
+    .intro-stat {
+      background: #fff; border-radius: 14px; padding: 14px 20px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,.05);
+      flex: 1; max-width: 130px;
+    }
+    .intro-stat-num { font-size: 24px; font-weight: 800; color: var(--v); }
+    .intro-stat-lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #7C3AED, #DB2777);
+      color: #fff; font-family: inherit;
+      font-size: 17px; font-weight: 700;
+      padding: 16px 44px; border-radius: 999px; border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(124,58,237,.3);
+      transition: transform .15s, box-shadow .15s;
+      letter-spacing: .01em;
+      animation: fadeDown .5s .4s ease both;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,58,237,.38); }
+    .btn-primary:active { transform: translateY(0); }
+
+    /* ── Quiz ────────────────────────────────────── */
+    .quiz-wrap { max-width: 640px; width: 100%; padding-top: 20px; }
+
+    .q-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .section-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 700;
+      padding: 5px 14px; border-radius: 999px;
+      letter-spacing: .03em; transition: all .3s;
+    }
+    .q-counter { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+    .q-card {
+      background: #fff; border-radius: 22px;
+      padding: 28px 32px 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.05), 0 14px 36px rgba(124,58,237,.08);
+      margin-bottom: 14px;
+      animation: slideUp .35s cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .q-text {
+      font-size: clamp(16px,2.4vw,19px); font-weight: 700;
+      line-height: 1.45; margin-bottom: 16px;
+    }
+    .q-hint {
+      font-size: 13px; color: var(--muted); margin-bottom: 14px;
+      font-weight: 500; font-style: italic;
+    }
+
+    /* Options */
+    .options { display: flex; flex-direction: column; gap: 8px; }
+
+    .opt-btn {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 13px 15px; border-radius: 12px;
+      border: 2px solid var(--border);
+      background: #fff; cursor: pointer; text-align: left;
+      transition: border-color .15s, background .15s, transform .1s;
+      font-family: inherit; width: 100%;
+    }
+    .opt-btn:hover:not(.selected) { border-color: var(--accent); background: #FAFAFA; }
+    .opt-btn.selected {
+      border-color: var(--accent);
+      background: var(--accent-l);
+    }
+    .opt-btn.selected .opt-key {
+      background: var(--accent); color: #fff;
+    }
+    .opt-btn.selected .opt-text { color: var(--accent-d); }
+
+    .opt-key {
+      flex-shrink: 0; width: 26px; height: 26px;
+      border-radius: 7px; background: #F3F4F6;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; color: var(--muted);
+      transition: background .15s, color .15s;
+    }
+    .opt-text { font-size: 14.5px; font-weight: 500; line-height: 1.45; padding-top: 2px; color: var(--text); }
+
+    .other-wrap { display: none; padding: 8px 0 0 38px; }
+    .other-wrap.open { display: block; }
+    .other-inp {
+      width: 100%; padding: 9px 13px;
+      border: 2px solid var(--accent); border-radius: 9px;
+      font-family: inherit; font-size: 14px; color: var(--text);
+      outline: none; transition: border-color .15s;
+    }
+    .other-inp:focus { border-color: var(--accent-d); }
+
+    /* Textarea */
+    .open-ta {
+      width: 100%; min-height: 130px; resize: vertical;
+      padding: 14px 16px; border: 2px solid var(--border);
+      border-radius: 14px; font-family: inherit; font-size: 15px;
+      color: var(--text); line-height: 1.65; outline: none;
+      transition: border-color .2s;
+    }
+    .open-ta:focus { border-color: var(--accent); }
+    .open-ta::placeholder { color: #9CA3AF; }
+
+    /* Continue & Back */
+    .btn-continue {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-d));
+      color: #fff; border: none; border-radius: 12px;
+      font-family: inherit; font-size: 15.5px; font-weight: 700;
+      cursor: pointer; margin-top: 16px;
+      box-shadow: 0 4px 14px rgba(124,58,237,.2);
+      transition: transform .15s, box-shadow .15s, background .3s;
+    }
+    .btn-continue:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,58,237,.3); }
+    .btn-continue:disabled { background: #E5E7EB; color: #9CA3AF; cursor: not-allowed; box-shadow: none; transform: none; }
+
+    .btn-back {
+      background: none; border: none; color: var(--muted);
+      font-family: inherit; font-size: 14px; font-weight: 500;
+      cursor: pointer; padding: 6px 2px;
+      display: inline-flex; align-items: center; gap: 4px;
+      transition: color .15s;
+    }
+    .btn-back:hover { color: var(--text); }
+
+    /* ── Loading ─────────────────────────────────── */
+    .loading-wrap { text-align: center; }
+    .loading-emoji { font-size: 64px; display: block; margin-bottom: 24px; animation: breathe 1.8s ease-in-out infinite; }
+    @keyframes breathe {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+    }
+    .loading-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+    .loading-sub { color: var(--muted); font-size: 15px; }
+    .loading-dots { display: flex; gap: 8px; justify-content: center; margin-top: 28px; }
+    .dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      animation: blink 1.4s ease-in-out infinite;
+    }
+    .dot:nth-child(1) { background: var(--v); }
+    .dot:nth-child(2) { background: #9F67FF; animation-delay: .2s; }
+    .dot:nth-child(3) { background: var(--p); animation-delay: .4s; }
+    @keyframes blink {
+      0%,80%,100% { transform: scale(.55); opacity: .3; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ── Results ─────────────────────────────────── */
+    #results-screen {
+      display: block; padding: 48px 16px 64px; align-items: unset; justify-content: unset;
+    }
+    #results-screen.hidden { display: none !important; }
+
+    .results-wrap { max-width: 680px; width: 100%; margin: 0 auto; }
+
+    .results-header { text-align: center; margin-bottom: 40px; }
+    .results-pill {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--v-l), var(--p-l));
+      color: var(--v); font-size: 13px; font-weight: 700;
+      padding: 6px 18px; border-radius: 999px; margin-bottom: 16px;
+      letter-spacing: .03em;
+    }
+    .results-title {
+      font-size: clamp(28px,5vw,42px); font-weight: 800; line-height: 1.15; margin-bottom: 12px;
+      background: linear-gradient(135deg, #7C3AED, #DB2777);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .results-sub {
+      color: var(--muted); font-size: 15.5px; line-height: 1.7;
+      max-width: 480px; margin: 0 auto;
+    }
+
+    .results-grid { display: grid; gap: 14px; margin-bottom: 28px; }
+
+    .r-card {
+      background: #fff; border-radius: 16px; padding: 18px 22px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.05), 0 8px 24px rgba(124,58,237,.06);
+      display: flex; gap: 15px; align-items: flex-start;
+      animation: slideUp .4s ease both;
+    }
+    .r-card:nth-child(1) { animation-delay: .05s; }
+    .r-card:nth-child(2) { animation-delay: .10s; }
+    .r-card:nth-child(3) { animation-delay: .15s; }
+    .r-card:nth-child(4) { animation-delay: .20s; }
+    .r-card:nth-child(5) { animation-delay: .25s; }
+    .r-card:nth-child(6) { animation-delay: .30s; }
+    .r-card:nth-child(7) { animation-delay: .35s; }
+    .r-card:nth-child(8) { animation-delay: .40s; }
+    .r-card:nth-child(9) { animation-delay: .45s; }
+
+    .r-icon {
+      flex-shrink: 0; width: 42px; height: 42px;
+      border-radius: 12px; display: flex; align-items: center;
+      justify-content: center; font-size: 20px;
+    }
+    .r-label {
+      font-size: 11px; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 5px;
+    }
+    .r-val { font-size: 15.5px; font-weight: 600; color: var(--text); line-height: 1.5; }
+
+    /* Open answers */
+    .open-section {
+      background: #fff; border-radius: 18px; padding: 24px 28px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.05), 0 8px 24px rgba(124,58,237,.06);
+      margin-bottom: 24px;
+      animation: slideUp .4s .5s ease both;
+    }
+    .open-sec-title { font-size: 15px; font-weight: 700; margin-bottom: 20px; }
+    .open-item + .open-item { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); }
+    .open-q { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 6px; }
+    .open-a { font-size: 15px; color: var(--text); line-height: 1.65; font-style: italic; }
+
+    /* Closing */
+    .closing {
+      background: linear-gradient(135deg, #7C3AED 0%, #DB2777 100%);
+      border-radius: 20px; padding: 36px 32px; text-align: center; color: #fff;
+      animation: slideUp .5s .55s ease both;
+    }
+    .closing-emoji { font-size: 44px; margin-bottom: 14px; display: block; }
+    .closing-title { font-size: 21px; font-weight: 800; margin-bottom: 12px; }
+    .closing-body { font-size: 15px; opacity: .9; line-height: 1.75; }
+
+    .restart-wrap { text-align: center; margin-top: 28px; }
+
+    /* ── Responsive ──────────────────────────────── */
+    @media (max-width: 480px) {
+      .q-card { padding: 20px 18px; }
+      .intro-card { padding: 20px; }
+      .results-wrap { padding: 0; }
+      .open-section { padding: 20px; }
+      .closing { padding: 28px 20px; }
+      .intro-stats { gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Progress bar ─────────────────────────────── -->
+<div id="progress-bar" style="display:none">
+  <div id="progress-fill" style="width:0%"></div>
+</div>
+
+<!-- ── Intro ─────────────────────────────────────── -->
+<div id="intro-screen" class="screen">
+  <div class="intro-wrap">
+    <div class="intro-badge">✨ Free Self-Assessment</div>
+    <h1 class="intro-title">Clarity Roadmap</h1>
+    <p class="intro-sub">From stuck to clear next steps</p>
+    <div class="intro-card">
+      <p>This short assessment will help you understand where you are, where you want to go, what's blocking you, and what kind of next step will support you best.</p>
+      <p>There are no right or wrong answers. Choose what feels most true right now. 💛</p>
+    </div>
+    <div class="intro-stats">
+      <div class="intro-stat">
+        <div class="intro-stat-num">24</div>
+        <div class="intro-stat-lbl">Questions</div>
+      </div>
+      <div class="intro-stat">
+        <div class="intro-stat-num">7</div>
+        <div class="intro-stat-lbl">Sections</div>
+      </div>
+      <div class="intro-stat">
+        <div class="intro-stat-num">~10</div>
+        <div class="intro-stat-lbl">Minutes</div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="startQuiz()">Begin Assessment →</button>
+  </div>
+</div>
+
+<!-- ── Quiz ──────────────────────────────────────── -->
+<div id="quiz-screen" class="screen hidden">
+  <div class="quiz-wrap">
+    <div class="q-header">
+      <span id="sec-badge" class="section-badge"></span>
+      <span id="q-counter" class="q-counter"></span>
+    </div>
+    <div id="q-card" class="q-card">
+      <p id="q-text" class="q-text"></p>
+      <p id="q-hint" class="q-hint" style="display:none"></p>
+      <div id="opts" class="options"></div>
+      <div id="text-wrap" style="display:none">
+        <textarea id="open-ta" class="open-ta"></textarea>
+      </div>
+      <button id="cont-btn" class="btn-continue" onclick="nextQ()" style="display:none">Continue →</button>
+    </div>
+    <div style="padding:0 4px">
+      <button id="back-btn" class="btn-back" onclick="prevQ()" style="display:none">← Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Loading ───────────────────────────────────── -->
+<div id="loading-screen" class="screen hidden">
+  <div class="loading-wrap">
+    <span class="loading-emoji">🔮</span>
+    <p class="loading-title">Creating your Clarity Roadmap…</p>
+    <p class="loading-sub">Analysing your answers to map your clearest path forward</p>
+    <div class="loading-dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Results ───────────────────────────────────── -->
+<div id="results-screen" class="screen hidden">
+  <div class="results-wrap">
+    <div class="results-header">
+      <div class="results-pill">✨ Your Personal Roadmap</div>
+      <h2 class="results-title">Your Clarity Roadmap</h2>
+      <p class="results-sub">Based on your answers, here's a personalised picture of where you are, what's blocking you, and your clearest path forward.</p>
+    </div>
+    <div id="results-grid" class="results-grid"></div>
+    <div id="open-sec"></div>
+    <div class="closing">
+      <span class="closing-emoji">🌟</span>
+      <h3 class="closing-title">You've taken the first step.</h3>
+      <p class="closing-body">Clarity doesn't come from thinking more — it comes from moving. Even one small action this week will shift something. You already have everything you need to begin.</p>
+    </div>
+    <div class="restart-wrap">
+      <button class="btn-back" onclick="restartQuiz()">← Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── Data ──────────────────────────────────────── */
+const SECTIONS = [
+  { id:1, name:"Where Are You Right Now?",  emoji:"🌱", c:"#7C3AED", l:"#EDE9FE", d:"#5B21B6" },
+  { id:2, name:"Where Do You Want To Go?",  emoji:"✨", c:"#DB2777", l:"#FCE7F3", d:"#9D174D" },
+  { id:3, name:"What's Blocking You?",      emoji:"🔓", c:"#D97706", l:"#FEF3C7", d:"#92400E" },
+  { id:4, name:"Your Repeating Pattern",    emoji:"🔄", c:"#E11D48", l:"#FFE4E6", d:"#9F1239" },
+  { id:5, name:"What Supports You?",        emoji:"💫", c:"#059669", l:"#D1FAE5", d:"#065F46" },
+  { id:6, name:"Your Next Direction",       emoji:"🗺️",  c:"#2563EB", l:"#DBEAFE", d:"#1E40AF" },
+  { id:7, name:"Final Reflection",          emoji:"💬", c:"#9333EA", l:"#F3E8FF", d:"#6B21A8" },
+];
+
+const QS = [
+  // ── Section 1 ──
+  { id:1, s:1, type:"single",
+    text:"What best describes where you are right now?",
+    opts:[
+      {k:"A",t:"I have an idea, but I haven't started yet."},
+      {k:"B",t:"I started, but I keep losing momentum."},
+      {k:"C",t:"I have too many ideas and I don't know which one to choose."},
+      {k:"D",t:"I know what I want, but I feel blocked or afraid."},
+      {k:"E",t:"I'm already taking action, but I need more structure and direction."},
+      {k:"F",t:"I feel unclear about what I actually want."},
+    ], other:true },
+  { id:2, s:1, type:"single",
+    text:"What area feels most stuck?",
+    opts:[
+      {k:"A",t:"Clarity about my direction"},
+      {k:"B",t:"Taking consistent action"},
+      {k:"C",t:"Confidence and self-trust"},
+      {k:"D",t:"Visibility / putting myself out there"},
+      {k:"E",t:"Creating or launching an offer/project"},
+      {k:"F",t:"Money, stability, or fear of risk"},
+      {k:"G",t:"Emotional overwhelm"},
+    ], other:true },
+  { id:3, s:1, type:"multi",
+    text:"What have you been wanting to move toward?",
+    hint:"Choose all that apply",
+    opts:[
+      {k:"A",t:"Launching a project or idea"},
+      {k:"B",t:"Creating an offer, course, service, or product"},
+      {k:"C",t:"Starting or growing a business"},
+      {k:"D",t:"Becoming more visible online"},
+      {k:"E",t:"Leaving or reducing a job I don't love"},
+      {k:"F",t:"Building a more aligned lifestyle"},
+      {k:"G",t:"Creating more confidence and inner stability"},
+      {k:"H",t:"I'm not fully sure yet"},
+    ], other:true },
+
+  // ── Section 2 ──
+  { id:4, s:2, type:"single",
+    text:"What kind of change do you want most right now?",
+    opts:[
+      {k:"A",t:"More clarity"},
+      {k:"B",t:"More confidence"},
+      {k:"C",t:"More action"},
+      {k:"D",t:"More consistency"},
+      {k:"E",t:"More freedom"},
+      {k:"F",t:"More income"},
+      {k:"G",t:"More self-expression"},
+      {k:"H",t:"More alignment"},
+    ], other:true },
+  { id:5, s:2, type:"multi", max:2,
+    text:"If things moved forward, what would you most love to see happen?",
+    hint:"Choose up to 2",
+    opts:[
+      {k:"A",t:"I finally choose a clear direction."},
+      {k:"B",t:"I start taking consistent action."},
+      {k:"C",t:"I launch something into the world."},
+      {k:"D",t:"I get my first clients/customers."},
+      {k:"E",t:"I build a routine that supports me."},
+      {k:"F",t:"I stop overthinking and start experimenting."},
+      {k:"G",t:"I feel proud of myself again."},
+      {k:"H",t:"I trust myself more."},
+    ], other:true },
+  { id:6, s:2, type:"multi", max:3,
+    text:"What would success feel like for you?",
+    hint:"Choose up to 3",
+    opts:[
+      {k:"A",t:"Free"},{k:"B",t:"Calm"},{k:"C",t:"Confident"},{k:"D",t:"Proud"},
+      {k:"E",t:"Safe"},{k:"F",t:"Excited"},{k:"G",t:"Energized"},{k:"H",t:"Clear"},
+      {k:"I",t:"Aligned"},{k:"J",t:"Powerful"},
+    ], other:true },
+  { id:7, s:2, type:"multi",
+    text:"Why does this matter to you?",
+    hint:"Choose all that apply",
+    opts:[
+      {k:"A",t:"I don't want to stay stuck in the same place."},
+      {k:"B",t:"I know I have something meaningful to create."},
+      {k:"C",t:"I want to feel more fulfilled."},
+      {k:"D",t:"I want more freedom in my life."},
+      {k:"E",t:"I want to stop abandoning myself."},
+      {k:"F",t:"I want to prove to myself that I can do this."},
+      {k:"G",t:"I feel like it's time for my next chapter."},
+    ], other:true },
+
+  // ── Section 3 ──
+  { id:8, s:3, type:"multi", max:2,
+    text:"What do you think is the main reason you haven't moved forward yet?",
+    hint:"Choose up to 2",
+    opts:[
+      {k:"A",t:"I don't have enough time."},
+      {k:"B",t:"I don't have enough clarity."},
+      {k:"C",t:"I don't feel ready."},
+      {k:"D",t:"I'm afraid of failing."},
+      {k:"E",t:"I'm afraid of being judged."},
+      {k:"F",t:"I have too many ideas."},
+      {k:"G",t:"I don't know what steps to take."},
+      {k:"H",t:"I lose motivation quickly."},
+      {k:"I",t:"I get overwhelmed."},
+      {k:"J",t:"I'm afraid to risk my stability."},
+    ], other:true },
+  { id:9, s:3, type:"single",
+    text:"What fear feels most present?",
+    opts:[
+      {k:"A",t:"What if I fail?"},
+      {k:"B",t:"What if people judge me?"},
+      {k:"C",t:"What if I'm not good enough?"},
+      {k:"D",t:"What if I choose the wrong direction?"},
+      {k:"E",t:"What if I start and don't finish again?"},
+      {k:"F",t:"What if I succeed and then can't handle it?"},
+      {k:"G",t:"What if I lose stability or money?"},
+      {k:"H",t:"I'm not sure."},
+    ], other:true },
+  { id:10, s:3, type:"single",
+    text:"What inner conflict feels most familiar?",
+    opts:[
+      {k:"A",t:"Part of me wants freedom, but part of me wants safety."},
+      {k:"B",t:"Part of me wants to be seen, but part of me wants to hide."},
+      {k:"C",t:"Part of me wants to start, but part of me wants to wait until I'm ready."},
+      {k:"D",t:"Part of me wants to commit, but part of me wants to keep all options open."},
+      {k:"E",t:"Part of me wants success, but part of me is afraid of pressure."},
+      {k:"F",t:"Part of me wants change, but part of me is exhausted."},
+      {k:"G",t:"I don't feel an inner conflict."},
+    ], other:true },
+  { id:11, s:3, type:"multi",
+    text:"When resistance shows up, what does it usually sound like?",
+    hint:"Choose all that apply",
+    opts:[
+      {k:"A",t:'"I\'m not ready yet."'},
+      {k:"B",t:'"I need to learn more first."'},
+      {k:"C",t:'"Who am I to do this?"'},
+      {k:"D",t:'"It\'s already been done."'},
+      {k:"E",t:'"I don\'t have enough time."'},
+      {k:"F",t:'"I\'ll start when I feel clearer."'},
+      {k:"G",t:'"I\'ll probably fail anyway."'},
+      {k:"H",t:'"This is too much."'},
+      {k:"I",t:'"I should focus on something more practical."'},
+    ], other:true },
+
+  // ── Section 4 ──
+  { id:12, s:4, type:"single",
+    text:"What pattern do you recognise most?",
+    opts:[
+      {k:"A",t:"I start strong and then lose momentum."},
+      {k:"B",t:"I overthink and don't start."},
+      {k:"C",t:"I jump between ideas."},
+      {k:"D",t:"I wait until everything feels perfect."},
+      {k:"E",t:"I get excited, then overwhelmed."},
+      {k:"F",t:"I focus on helping others before my own vision."},
+      {k:"G",t:"I hide when it's time to be visible."},
+      {k:"H",t:"I take action, but without a clear strategy."},
+    ], other:true },
+  { id:13, s:4, type:"single",
+    text:"When do you usually get stuck?",
+    opts:[
+      {k:"A",t:"Before starting"},
+      {k:"B",t:"When I need to choose one direction"},
+      {k:"C",t:"When I need to share my work publicly"},
+      {k:"D",t:"When I need to ask for money or sell"},
+      {k:"E",t:"When things become repetitive or structured"},
+      {k:"F",t:"When I don't see results quickly"},
+      {k:"G",t:"When life gets busy"},
+      {k:"H",t:"When fear or self-doubt appears"},
+    ], other:true },
+  { id:14, s:4, type:"multi", max:2,
+    text:"What emotion most often stops you?",
+    hint:"Choose up to 2",
+    opts:[
+      {k:"A",t:"Fear"},{k:"B",t:"Shame"},{k:"C",t:"Confusion"},
+      {k:"D",t:"Overwhelm"},{k:"E",t:"Tiredness"},{k:"F",t:"Pressure"},
+      {k:"G",t:"Loneliness"},{k:"H",t:"Doubt"},{k:"I",t:"Frustration"},
+    ], other:true },
+
+  // ── Section 5 ──
+  { id:15, s:5, type:"multi",
+    text:"What helps you move forward?",
+    hint:"Choose all that apply",
+    opts:[
+      {k:"A",t:"Clear structure"},{k:"B",t:"Small steps"},{k:"C",t:"Accountability"},
+      {k:"D",t:"Emotional support"},{k:"E",t:"Deadlines"},{k:"F",t:"Creative freedom"},
+      {k:"G",t:"External validation or feedback"},{k:"H",t:"Body movement / nervous system regulation"},
+      {k:"I",t:"Co-working or community"},{k:"J",t:"A clear plan"},
+    ], other:true },
+  { id:16, s:5, type:"multi", max:3,
+    text:"What strengths can you rely on?",
+    hint:"Choose up to 3",
+    opts:[
+      {k:"A",t:"Creativity"},{k:"B",t:"Sensitivity / emotional depth"},
+      {k:"C",t:"Strategic thinking"},{k:"D",t:"Discipline"},{k:"E",t:"Curiosity"},
+      {k:"F",t:"Communication"},{k:"G",t:"Problem-solving"},{k:"H",t:"Intuition"},
+      {k:"I",t:"Resilience"},{k:"J",t:"Ability to learn fast"},{k:"K",t:"Ability to connect with people"},
+    ], other:true },
+  { id:17, s:5, type:"multi", max:2,
+    text:"What do you need your next step to feel like?",
+    hint:"Choose up to 2",
+    opts:[
+      {k:"A",t:"Simple"},{k:"B",t:"Clear"},{k:"C",t:"Safe"},
+      {k:"D",t:"Exciting"},{k:"E",t:"Practical"},{k:"F",t:"Gentle"},
+      {k:"G",t:"Bold"},{k:"H",t:"Structured"},{k:"I",t:"Flexible"},
+    ], other:true },
+  { id:18, s:5, type:"multi",
+    text:"What real-life constraint needs to be respected?",
+    hint:"Choose all that apply",
+    opts:[
+      {k:"A",t:"Limited time"},{k:"B",t:"Limited energy"},{k:"C",t:"Financial stability"},
+      {k:"D",t:"Current job or clients"},{k:"E",t:"Family or relationship responsibilities"},
+      {k:"F",t:"Emotional capacity"},{k:"G",t:"Health / nervous system"},
+      {k:"H",t:"Lack of support"},{k:"I",t:"No major constraints right now"},
+    ], other:true },
+
+  // ── Section 6 ──
+  { id:19, s:6, type:"single",
+    text:"What feels like the best next step for the next 30 days?",
+    opts:[
+      {k:"A",t:"Clarify my direction"},
+      {k:"B",t:"Choose one idea to focus on"},
+      {k:"C",t:"Build a simple action plan"},
+      {k:"D",t:"Validate my idea with real people"},
+      {k:"E",t:"Create or refine my offer"},
+      {k:"F",t:"Start sharing content"},
+      {k:"G",t:"Launch a small beta / experiment"},
+      {k:"H",t:"Build consistency and self-trust"},
+    ], other:true },
+  { id:20, s:6, type:"single",
+    text:"What level of action feels realistic right now?",
+    opts:[
+      {k:"A",t:"Very small steps, 1–2 hours per week"},
+      {k:"B",t:"Gentle consistency, 3–5 hours per week"},
+      {k:"C",t:"Focused action, 5–8 hours per week"},
+      {k:"D",t:"Strong commitment, 8+ hours per week"},
+      {k:"E",t:"I'm not sure yet"},
+    ] },
+  { id:21, s:6, type:"multi",
+    text:"What would make this feel safer and more doable?",
+    hint:"Choose all that apply",
+    opts:[
+      {k:"A",t:"Breaking it into smaller steps"},
+      {k:"B",t:"Having a clear weekly plan"},
+      {k:"C",t:"Getting emotional support when resistance appears"},
+      {k:"D",t:"Having accountability"},
+      {k:"E",t:"Making it an experiment instead of a huge commitment"},
+      {k:"F",t:"Setting a realistic financial safety plan"},
+      {k:"G",t:"Getting feedback from someone I trust"},
+      {k:"H",t:"Reducing pressure and expectations"},
+    ], other:true },
+
+  // ── Section 7 ──
+  { id:22, s:7, type:"text",
+    text:"In your own words, what do you most want clarity about right now?",
+    ph:"Take a moment to share what's on your mind… there are no right or wrong answers here." },
+  { id:23, s:7, type:"text",
+    text:"What feels like the most honest next step for you?",
+    ph:"What does your gut say? Even if it feels small or uncertain…" },
+  { id:24, s:7, type:"text",
+    text:"What do you want to remember when you feel stuck?",
+    ph:"Write something to your future self, for the moments when things get hard…" },
+];
+
+/* ─── State ─────────────────────────────────────── */
+const state = { idx: 0, answers: {}, results: null };
+
+function ans(id) {
+  if (!state.answers[id]) state.answers[id] = { sel: [], text: "", other: "" };
+  return state.answers[id];
+}
+
+/* ─── Navigation ────────────────────────────────── */
+function startQuiz() {
+  state.idx = 0; state.answers = {};
+  show("quiz");
+  renderQ(); updateProgress();
+}
+
+function nextQ() {
+  if (state.idx < QS.length - 1) {
+    state.idx++; renderQ(); updateProgress();
+  } else {
+    show("loading");
+    setTimeout(() => { state.results = buildResults(); show("results"); renderResults(); scrollTo(0,0); }, 2600);
+  }
+}
+
+function prevQ() {
+  if (state.idx > 0) { state.idx--; renderQ(); updateProgress(); }
+  else show("intro");
+}
+
+function restartQuiz() { state.idx=0; state.answers={}; state.results=null; show("intro"); }
+
+function show(screen) {
+  ["intro","quiz","loading","results"].forEach(id => {
+    const el = document.getElementById(id+"-screen");
+    el.classList.toggle("hidden", id !== screen);
+  });
+  document.getElementById("progress-bar").style.display = screen === "quiz" ? "block" : "none";
+}
+
+function updateProgress() {
+  document.getElementById("progress-fill").style.width = (state.idx / QS.length * 100) + "%";
+}
+
+/* ─── Render question ───────────────────────────── */
+function renderQ() {
+  const q = QS[state.idx];
+  const sec = SECTIONS.find(s => s.id === q.s);
+
+  // Section colours as CSS vars on quiz screen
+  const qs = document.getElementById("quiz-screen");
+  qs.style.setProperty("--accent",   sec.c);
+  qs.style.setProperty("--accent-l", sec.l);
+  qs.style.setProperty("--accent-d", sec.d);
+
+  // Badge
+  const badge = document.getElementById("sec-badge");
+  badge.textContent = sec.emoji + " " + sec.name;
+  badge.style.background = sec.l;
+  badge.style.color = sec.c;
+
+  document.getElementById("q-counter").textContent = (state.idx+1) + " / " + QS.length;
+  document.getElementById("q-text").textContent = q.text;
+
+  const hint = document.getElementById("q-hint");
+  if (q.hint) { hint.textContent = q.hint; hint.style.display = "block"; }
+  else { hint.style.display = "none"; }
+
+  const optsEl  = document.getElementById("opts");
+  const textEl  = document.getElementById("text-wrap");
+  const contBtn = document.getElementById("cont-btn");
+  const backBtn = document.getElementById("back-btn");
+
+  backBtn.style.display = state.idx > 0 ? "inline-flex" : "none";
+
+  if (q.type === "text") {
+    optsEl.style.display  = "none";
+    textEl.style.display  = "block";
+    contBtn.style.display = "flex";
+    const ta = document.getElementById("open-ta");
+    ta.placeholder = q.ph || "Share your thoughts…";
+    ta.value = ans(q.id).text || "";
+    ta.oninput = e => { ans(q.id).text = e.target.value; updateCont(); };
+    updateCont();
+  } else {
+    optsEl.style.display  = "flex";
+    textEl.style.display  = "none";
+    contBtn.style.display = q.type === "single" ? "none" : "flex";
+
+    const a = ans(q.id);
+    const allOpts = [...(q.opts||[])];
+    if (q.other) allOpts.push({k:"OTHER", t:"Other…"});
+
+    optsEl.innerHTML = allOpts.map(o => {
+      const sel = a.sel.includes(o.k);
+      return `
+        <button class="opt-btn${sel?" selected":""}" onclick="pick('${q.id}','${o.k}')">
+          <span class="opt-key">${o.k==="OTHER"?"+":o.k}</span>
+          <span class="opt-text">${o.t}</span>
+        </button>
+        ${o.k==="OTHER" ? `<div class="other-wrap${a.sel.includes("OTHER")?" open":""}" id="ow-${q.id}">
+          <input class="other-inp" type="text" placeholder="Tell us more…"
+            value="${escHtml(a.other||"")}"
+            oninput="updateOther('${q.id}',this.value)"
+            onclick="event.stopPropagation()">
+        </div>` : ""}
+      `;
+    }).join("");
+    updateCont();
+  }
+
+  // Replay animation
+  const card = document.getElementById("q-card");
+  card.style.animation = "none";
+  card.offsetHeight;
+  card.style.animation = "slideUp .35s cubic-bezier(.4,0,.2,1)";
+}
+
+function escHtml(s) { return s.replace(/&/g,"&amp;").replace(/"/g,"&quot;"); }
+
+function pick(qid, key) {
+  const q = QS.find(q => q.id == qid);
+  const a = ans(qid);
+  if (q.type === "single") {
+    a.sel = [key];
+    renderQ();
+    if (key !== "OTHER") setTimeout(nextQ, 320);
+  } else {
+    const i = a.sel.indexOf(key);
+    if (i >= 0) {
+      a.sel.splice(i, 1);
+    } else {
+      const max = q.max || 999;
+      if (a.sel.length < max) a.sel.push(key);
+    }
+    renderQ();
+  }
+}
+
+function updateOther(qid, val) {
+  ans(qid).other = val;
+}
+
+function updateCont() {
+  const q = QS[state.idx];
+  const a = ans(q.id);
+  const valid = q.type === "text"
+    ? (a.text && a.text.trim().length > 0)
+    : a.sel.length > 0;
+  document.getElementById("cont-btn").disabled = !valid;
+}
+
+/* ─── Results ───────────────────────────────────── */
+function buildResults() {
+  const a = (id) => ans(id);
+
+  // Stage (Q1)
+  const stageMap = {
+    A:"pre-launch ideation — you have the spark, now it's time to build the path",
+    B:"rebuilding momentum — you've started but need a system to sustain your energy",
+    C:"overcoming idea overload — you're full of possibility and need a compass",
+    D:"inner unblocking — you know the destination but something inside is holding the door shut",
+    E:"strategic growth — you're in motion and ready to add more structure",
+    F:"self-discovery — you're still uncovering your true direction",
+  };
+  const s1 = a(1); const stk = s1.sel[0];
+  const stage = stk === "OTHER" ? (s1.other || "a unique transition personal to you") : (stageMap[stk] || "transition and rediscovery");
+
+  // Desire (Q4)
+  const desireMap = {
+    A:"clarity — a clear sense of direction and purpose",
+    B:"confidence — trusting yourself and your ideas",
+    C:"more consistent action — moving forward even when it's hard",
+    D:"consistency — building habits and momentum that stick",
+    E:"freedom — a life on your own terms",
+    F:"income — financial flow that supports your vision",
+    G:"self-expression — sharing who you truly are with the world",
+    H:"deep alignment — living and working in tune with your values",
+  };
+  const s4 = a(4); const dk = s4.sel[0];
+  const desire = dk === "OTHER" ? (s4.other || "something uniquely meaningful to you") : (desireMap[dk] || "meaningful change and growth");
+
+  // Block (Q8)
+  const blockMap = {
+    A:"time constraints",B:"lack of clarity",C:"feeling not ready yet",
+    D:"fear of failure",E:"fear of judgment",F:"decision paralysis from too many ideas",
+    G:"not knowing which steps to take",H:"inconsistent motivation",
+    I:"overwhelm",J:"fear of financial risk",
+  };
+  const s8 = a(8);
+  const bts = s8.sel.filter(k=>k!=="OTHER").map(k=>blockMap[k]).filter(Boolean);
+  if (s8.other) bts.push(s8.other);
+  const block = bts.length > 0 ? bts.join(" and ") : "something that feels unclear but very real";
+
+  // Fear (Q9)
+  const fearMap = {
+    A:"failing and proving the doubts right",
+    B:"being seen, judged, or misunderstood",
+    C:"not being good enough — yet",
+    D:"choosing the wrong path and wasting time",
+    E:"starting again and not finishing",
+    F:"succeeding and then not being able to handle the pressure",
+    G:"losing financial security or stability",
+    H:"something unnamed that lives just beneath the surface",
+  };
+  const s9 = a(9); const fk = s9.sel[0];
+  const fear = fk === "OTHER" ? (s9.other || "something deeply personal") : (fearMap[fk] || "stepping into the unknown");
+
+  // Pattern (Q12)
+  const patternMap = {
+    A:"starting strong, then losing steam before the finish line",
+    B:"overthinking before beginning — planning forever, starting never",
+    C:"jumping between ideas without fully committing to one",
+    D:"waiting for the perfect moment that never quite arrives",
+    E:"getting excited by the idea, then overwhelmed by the reality",
+    F:"putting others' needs before your own vision",
+    G:"retreating when it's time to be visible",
+    H:"taking lots of action, but without a clear strategy guiding it",
+  };
+  const s12 = a(12); const pk = s12.sel[0];
+  const pattern = pk === "OTHER" ? (s12.other || "a cycle that keeps repeating") : (patternMap[pk] || "a familiar loop");
+
+  // Support (Q15)
+  const supportMap = {
+    A:"clear structure",B:"small, manageable steps",C:"accountability",
+    D:"emotional support",E:"deadlines and timeboxing",F:"creative freedom",
+    G:"external feedback and validation",H:"body-based regulation and grounding",
+    I:"community and co-working",J:"clear plans to follow",
+  };
+  const s15 = a(15);
+  const sts = s15.sel.filter(k=>k!=="OTHER").slice(0,3).map(k=>supportMap[k]).filter(Boolean);
+  if (s15.other) sts.push(s15.other);
+  const support = sts.length > 0 ? sts.join(", ") : "support that fits your unique style";
+
+  // Focus (Q19)
+  const focusMap = {
+    A:"gaining clarity on your direction",B:"choosing one idea and fully committing to it",
+    C:"building a simple, realistic action plan",D:"validating your idea with real people",
+    E:"creating or refining your offer",F:"starting to share your voice and work",
+    G:"launching a small beta or experiment",H:"building consistency and self-trust",
+  };
+  const s19 = a(19); const fok = s19.sel[0];
+  const focus = fok === "OTHER" ? (s19.other || "a step that feels right for you") : (focusMap[fok] || "one meaningful step forward");
+
+  // First step (Q20 pace + Q17 feeling)
+  const paceMap = {
+    A:"Start with just 1–2 hours this week",
+    B:"Dedicate 3–5 focused hours spread across the week",
+    C:"Commit to 5–8 hours of focused work",
+    D:"Go all in with 8+ hours of dedicated time",
+    E:"Start with one small action and let momentum build naturally",
+  };
+  const s20 = a(20); const pck = s20.sel[0];
+  const pace = paceMap[pck] || "Start with one small, concrete action";
+
+  const feelMap = {
+    A:"simple and low-pressure",B:"clear and focused",C:"safe and grounded",
+    D:"exciting and energising",E:"practical and tangible",F:"gentle and self-compassionate",
+    G:"bold and courageous",H:"structured and organised",I:"flexible and exploratory",
+  };
+  const s17 = a(17);
+  const fts = s17.sel.filter(k=>k!=="OTHER").slice(0,2).map(k=>feelMap[k]).filter(Boolean);
+  const feelStr = fts.length > 0 ? ` — keep it ${fts.join(" and ")}` : "";
+  const firstStep = `${pace} toward ${focus}${feelStr}.`;
+
+  // Success feelings (Q6)
+  const feelingsMap = {
+    A:"Free",B:"Calm",C:"Confident",D:"Proud",E:"Safe",
+    F:"Excited",G:"Energised",H:"Clear",I:"Aligned",J:"Powerful",
+  };
+  const s6 = a(6);
+  const successFeelings = s6.sel.filter(k=>k!=="OTHER").map(k=>feelingsMap[k]).filter(Boolean);
+
+  return {
+    stage, desire, block, fear, pattern, support, focus, firstStep, successFeelings,
+    open: { clarity: a(22).text, next: a(23).text, reminder: a(24).text },
+  };
+}
+
+function renderResults() {
+  const r = state.results;
+
+  const cards = [
+    { icon:"🌱", bg:"#EDE9FE", label:"Current Stage",         val:`You are in a stage of ${r.stage}.` },
+    { icon:"✨", bg:"#FCE7F3", label:"Main Desire",           val:`What you most want right now is ${r.desire}.` },
+  ];
+  if (r.successFeelings.length > 0) {
+    cards.push({ icon:"🎯", bg:"#F3E8FF", label:"Success Feels Like", val: r.successFeelings.join(" · ") });
+  }
+  cards.push(
+    { icon:"🔓", bg:"#FEF3C7", label:"Core Block",            val:`The main thing slowing you down is ${r.block}.` },
+    { icon:"💭", bg:"#FFE4E6", label:"Deeper Fear",           val:`Underneath it, there may be a fear of ${r.fear}.` },
+    { icon:"🔄", bg:"#D1FAE5", label:"Repeating Pattern",     val:`Your pattern tends to be ${r.pattern}.` },
+    { icon:"💫", bg:"#DBEAFE", label:"Best Support Style",    val:`You move forward best with ${r.support}.` },
+    { icon:"🗺️",  bg:"#EDE9FE", label:"Next 30-Day Focus",    val:`Your recommended focus: ${r.focus}.` },
+    { icon:"⚡", bg:"#FEF3C7", label:"Your First Step",       val: r.firstStep },
+  );
+
+  document.getElementById("results-grid").innerHTML = cards.map(c => `
+    <div class="r-card">
+      <div class="r-icon" style="background:${c.bg}">${c.icon}</div>
+      <div>
+        <div class="r-label">${c.label}</div>
+        <div class="r-val">${c.val}</div>
+      </div>
+    </div>
+  `).join("");
+
+  const openSec = document.getElementById("open-sec");
+  const { clarity, next, reminder } = r.open;
+  if (clarity || next || reminder) {
+    openSec.innerHTML = `
+      <div class="open-section">
+        <div class="open-sec-title">💬 In Your Own Words</div>
+        ${clarity ? `<div class="open-item"><div class="open-q">What you want clarity about</div><div class="open-a">"${clarity}"</div></div>` : ""}
+        ${next    ? `<div class="open-item"><div class="open-q">Your most honest next step</div><div class="open-a">"${next}"</div></div>` : ""}
+        ${reminder? `<div class="open-item"><div class="open-q">What to remember when stuck</div><div class="open-a">"${reminder}"</div></div>` : ""}
+      </div>`;
+  } else {
+    openSec.innerHTML = "";
+  }
+}
+</script>
+</body>
+</html>
